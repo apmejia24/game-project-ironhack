@@ -26,8 +26,13 @@ function Gusano(x,y,width,height,color) {
     ctx.fillRect(this.x,this.y,this.width, this.height)
   };
   //this.attack = function() {}
-  // this.isAlive = true
-
+  this.isAlive = true
+  this.isTouching = function(ardilla){
+    return (this.x < ardilla.x + ardilla.width) &&
+           (this.x + this.width > ardilla.x) &&
+           (this.y < ardilla.y + ardilla.height) &&
+           (this.y + this.height > ardilla.y)
+  }
 }
 
 
@@ -41,8 +46,14 @@ function Ardilla(x,width,height,color) {
   this.health = 40;
   this.gravity = 0.05;
   this.gravitySpeed = 0;
+  this.isAlive = true;
   this.draw = function () {
     ctx.fillStyle = this.color;
+    if(this.y-this.height < 330){
+      this.y++
+    }else{
+      this.x--
+    }
     ctx.fillRect(this.x,this.y,this.width, this.height)
   };
   this.stop = function(){
@@ -51,6 +62,7 @@ function Ardilla(x,width,height,color) {
     }
 
   }
+
 
 
 }
@@ -73,7 +85,7 @@ function Dino(x,y,width,height,color) {
 
 // FUNCIONES COMPLEMENTARIAS
 
-var gusano = new Gusano(5,300,80,80,'red');
+var gusano = new Gusano(5,390,80,80,'red');
 
 
 
@@ -87,23 +99,62 @@ function clearCanvas() {
 }
 
 function generarArdillas(){
-  if (frames % 300 === 0){
-    var randomPosition = Math.floor(Math.random() * (canvas.width - 150)) + 150;
-    var ardilla = new Ardilla(randomPosition,50,50,'brown');
+
+    var randomPosition = Math.floor(Math.random() * (canvas.width - (gusano.x + gusano.width))) + (gusano.x + gusano.width);
+    console.log(randomPosition)
+    var ardilla = new Ardilla(randomPosition+30,50,50,'brown');
     ardillas.push(ardilla);
-  }
+
+
+
+  // if(ardillas[0].isAlive === false){
+  //   if (frames % 100 === 0){
+  //     var randomPosition = Math.floor(Math.random() * (canvas.width - 150)) - 150;
+  //     var ardilla = new Ardilla(randomPosition,50,50,'brown');
+  //     ardillas.push(ardilla);
+  //   }
+  // }
 }
+
+
+
 
 function pintarArdilla() {
   ardillas.forEach(function(ardilla){
     ardilla.draw();
-    if (ardilla.y == 403) {
-      ardilla.y = 403
-    } else if(ardilla.y < 403) {
-      ardilla.y += 5;
-    }
+    // if (ardilla.y == 418) {
+    //   console.log('hol')
+    //   ardilla.y = 418
+    // } else if(ardilla.y < 418) {
+    //   ardilla.y += 5;
+    // }
   });
 }
+
+function checkColision(){
+  ardillas.forEach(function(ardillaMala, index){
+    if(gusano.isTouching(ardillaMala)){
+      ardillaMala.x = gusano.x + gusano.width
+      moveRight = ''
+      if (frames % 100 == 0){
+        ardillaMala.health -= 10
+        console.log(ardillaMala.health)
+        if(ardillaMala.health == 0){
+          ardillas.shift();
+          moveRight = function(){
+            gusano.x += 5;
+          }
+          generarArdillas()
+
+        }
+      }
+    }
+  })
+
+}
+
+
+
 
 
 
@@ -114,20 +165,21 @@ function update(){
   frames += 1
   clearCanvas()
   gusano.draw()
-  generarArdillas()
   pintarArdilla()
+  checkColision ()
+
 
 
  }
 
 function start() {
-  interval = setInterval(
-    update, 1000/60)
+  interval = setInterval(update, 1000/90)
+  generarArdillas()
 }
 
 
 window.onload = function() {
-  start()
+  start();
 }
 
 
