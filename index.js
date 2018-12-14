@@ -11,21 +11,40 @@ var endgame = false;
 
 // FUNCIONES CONSTRUCTORAS
 
-function Gusano(x,y,width,height,color) {
-  this.x = x;
-  this.y = y;
-  this.width = width;
-  this.height = height;
-  this.color = color;
+function Gusano() {
+  this.x = 50;
+  this.y = 390;
+  this.aux = 0;
+  this.srcX = 0;
+  this.srcY = 0;
+  this.sheetWidth = 621;
+  this.sheetHeight = 172;
+  this.frameCountCols = 9;
+  this.frameCountRows = 2;
+  this.width =   this.sheetWidth / this.frameCountCols;
+  this.height = this.sheetHeight / this.frameCountRows;
+  this.currentFrame = 0;
+  this.gusano = new Image();
+  this.gusano.src = "images/oso2.png"
+  this.gusano.onload = function(){
+    this.drawImage()
+  }.bind(this)
+  //this.color = color;
   this.speedx = 0;
   this.health = 80;
   this.newPos = function(){
     this.x += this.speedx;
   };
-  this.draw = function() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x,this.y,this.width, this.height)
+  this.drawImage = function() {
+    ctx.drawImage(this.gusano,this.aux,this.srcY,60,90,this.x,this.y,this.width, this.height);
   };
+  this.updateFrame = function(){
+
+    this.currentFrame += this.currentFrame % this.frameCountCols;
+    this.srcX = this.currentFrame * this.width;
+    console.log(frames)
+    this.srcY = 0;
+  }
   //this.attack = function() {}
   this.isAlive = true
   this.isTouching = function(ardilla){
@@ -48,7 +67,7 @@ function Ardilla(x,width,height,color) {
   this.gravity = 0.05;
   this.gravitySpeed = 0;
   this.isAlive = true;
-  
+
   this.draw = function () {
     ctx.fillStyle = this.color;
     if(this.y-this.height < 370){
@@ -83,14 +102,53 @@ function Goal(x,y,width,height,color){
 
 // FUNCIONES COMPLEMENTARIAS
 
-var gusano = new Gusano(5,390,80,80,'red');
+var gusano = new Gusano();
 var goal = new Goal(700,375,95,95,'yellow');
 
 
 
 function moveRight() {
   gusano.x += 5;
-
+  switch (gusano.aux) {
+    case 0:
+      return gusano.aux = 60;
+    case 60:
+      return gusano.aux = 130;
+    case 130:
+      return gusano.aux = 200;
+    case 200:
+      return gusano.aux = 270;
+    case 270:
+      return gusano.aux = 330;
+    case 330:
+      return gusano.aux = 410;
+    case 410:
+      return gusano.aux = 480;
+    case 480:
+      return gusano.aux = 550;
+    case 550:
+      return gusano.aux = 617;
+    case 617:
+      return gusano.aux = 690;
+    case 690:
+      return gusano.aux = 760;
+    case 760:
+      return gusano.aux = 830;
+    case 830:
+      return gusano.aux = 900;
+    case 900:
+      return gusano.aux = 970;
+    case 970:
+      return gusano.aux = 1042;
+    case 1042:
+      return gusano.aux = 1115;
+    case 1115:
+        return gusano.aux = 1182;
+    case 1182:
+        return gusano.aux = 1248;
+    case 1248:
+        return gusano.aux = 0;
+  }
 }
 
 function clearCanvas() {
@@ -100,7 +158,6 @@ function clearCanvas() {
 function generarArdillas(){
 
     var randomPosition = Math.floor(Math.random() * (canvas.width - (gusano.x + gusano.width))) + (gusano.x + gusano.width);
-    console.log(randomPosition)
     var ardilla = new Ardilla(randomPosition+20,50,50,'brown');
     ardillas.push(ardilla);
 
@@ -134,7 +191,7 @@ function checkColisionArdilla(){
   ardillas.forEach(function(ardillaMala, index){
     if(gusano.isTouching(ardillaMala)){
       ardillaMala.x = gusano.x + gusano.width
-      moveRight = ''
+    
       if (frames % 100 == 0){
         ardillaMala.health -= 10
 
@@ -172,7 +229,6 @@ function ckeckColisionGusano(){
 
 function checkColisionMeta() {
     if (gusano.isTouching(goal)){
-      console.log('gwegwkjegsjwhg')
       gameOver()
     }
 }
@@ -195,10 +251,10 @@ function generarLaPrimerArdilla(){
 
  //Borra canvas y actualiza todo
 function update(){
-  frames += 1
+  frames ++
   clearCanvas()
   generarLaPrimerArdilla()
-  gusano.draw()
+  gusano.drawImage()
   pintarArdilla()
   checkColisionArdilla ()
   checkColisionMeta()
@@ -213,6 +269,7 @@ function start() {
 
 window.onload = function() {
   start()
+  update()
 }
 
 
