@@ -1,4 +1,5 @@
 
+
 //  VARIABLES
 
 var canvas = document.getElementById("furrywars");
@@ -13,7 +14,7 @@ var endgame = false;
 
 function Gusano() {
   this.x = 50;
-  this.y = 390;
+  this.y = 370;
   this.aux = 0;
   this.srcX = 0;
   this.srcY = 0;
@@ -62,24 +63,26 @@ function Ardilla(x,width,height,color) {
   this.y = 0;
   this.width = width;
   this.height = height;
-  this.color = color;
   this.health = 40;
   this.gravity = 0.05;
   this.gravitySpeed = 0;
   this.isAlive = true;
-
+  this.img = new Image();
+  this.img.src = "images/enemy.png";
+  this.img.onload = function(){
+    this.draw();
+  }.bind(this);
   this.draw = function () {
-    ctx.fillStyle = this.color;
-    if(this.y-this.height < 370){
+    if(this.y-this.height < 290){
       this.y++
     }else{
       this.x--
     }
-    ctx.fillRect(this.x,this.y,this.width, this.height)
+    ctx.drawImage(this.img, this.x,this.y,this.width, this.height)
   };
   this.stop = function(){
-    if (ardilla.y == 320) {
-      ardilla.y = 320
+    if (ardilla.y == 300) {
+      ardilla.y = 300
     }
   }
 }
@@ -91,11 +94,16 @@ function Goal(x,y,width,height,color){
   this.y = y;
   this.width = width;
   this.height = height;
+  this.img = new Image();
+  this.img.src = "images/star.png";
+  this.img.onload = function(){
+    this.draw();
+  }.bind(this);
   this.color = color;
   this.draw = function (){
-    ctx,fillStyle = this.color;
-    ctx.fillRect(this.x, this.y,this.width, this.height)
+    ctx.drawImage(this.img, this.x,this.y,this.width, this.height)
   }
+
 }
 
 
@@ -158,7 +166,7 @@ function clearCanvas() {
 function generarArdillas(){
 
     var randomPosition = Math.floor(Math.random() * (canvas.width - (gusano.x + gusano.width))) + (gusano.x + gusano.width);
-    var ardilla = new Ardilla(randomPosition+20,50,50,'brown');
+    var ardilla = new Ardilla(randomPosition+20,80,80,'brown');
     ardillas.push(ardilla);
 
 
@@ -191,7 +199,7 @@ function checkColisionArdilla(){
   ardillas.forEach(function(ardillaMala, index){
     if(gusano.isTouching(ardillaMala)){
       ardillaMala.x = gusano.x + gusano.width
-    
+
       if (frames % 100 == 0){
         ardillaMala.health -= 10
 
@@ -204,6 +212,7 @@ function checkColisionArdilla(){
           if(!endgame){
             generarArdillas()
           }
+
         }
       }
     }
@@ -230,6 +239,7 @@ function ckeckColisionGusano(){
 function checkColisionMeta() {
     if (gusano.isTouching(goal)){
       gameOver()
+      document.getElementById('ganaste').style.display = 'block';
     }
 }
 
